@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"log"
+
 	"github.com/code-raushan/video-transcoding-service/upload-service/database"
 	"github.com/code-raushan/video-transcoding-service/upload-service/models"
 	"github.com/code-raushan/video-transcoding-service/upload-service/types"
 	"github.com/code-raushan/video-transcoding-service/upload-service/utils"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 func SignUp(c *fiber.Ctx) error {
@@ -46,4 +49,45 @@ func SignUp(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(user)
+}
+
+func SignIn(c *fiber.Ctx) error {
+	var req types.SignInRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Cannot parse the JSON body",
+		})
+	}
+
+	var user models.User
+
+	result := database.DB.Where("email = ?", req.Email).First(&user)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Invalid email or password",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "failed to authenticate",
+		})
+	}
+
+	if !utils.CheckPassword(req.Password, user.Password) {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid email or password",
+		})
+	}
+
+	jwtToken, err := utils.CreateJWT(c, user.ID)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Successfully signed in",
+		"user": user,
+		"token": jwtToken,
+	})
 }
