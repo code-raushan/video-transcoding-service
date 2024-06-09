@@ -37,8 +37,6 @@ func CreateJWT(id string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, _ := token.SignedString([]byte(JWT_SECRET))
-
-	fmt.Println("tokenstring", tokenString)
 	
 	return tokenString, nil
 }
