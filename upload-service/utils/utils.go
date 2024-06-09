@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -33,9 +34,11 @@ func CreateJWT(id string) (string, error) {
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, _ := token.SignedString([]byte(JWT_SECRET))
+
+	fmt.Println("tokenstring", tokenString)
 	
 	return tokenString, nil
 }
