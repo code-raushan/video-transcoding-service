@@ -22,10 +22,10 @@ func main(){
 
 	apiV1 := app.Group("/api/v1")
 
-	apiV1.Route("/", routes.UsersRoute())
+	apiV1.Route("/auth", routes.UsersRoute())
 	
 	if err := app.Listen(":8500"); err != nil {
 		log.Fatalf("Failed to start HTTP server at port 8500")
 	}
-
 }
+

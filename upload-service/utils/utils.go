@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
@@ -22,7 +21,7 @@ func CheckPassword(password, hash string) bool {
 	return err == nil
 }
 
-func CreateJWT(c *fiber.Ctx, id string) (string, error) {
+func CreateJWT(id string) (string, error) {
 	if err:= godotenv.Load(); err !=nil {
 		log.Fatal("error loading environment variables")
 	}
@@ -36,12 +35,7 @@ func CreateJWT(c *fiber.Ctx, id string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
 
-	tokenString, err := token.SignedString([]byte(JWT_SECRET))
-	if err != nil {
-		return "", c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "failed to sign the token",
-		})
-	}
-
+	tokenString, _ := token.SignedString([]byte(JWT_SECRET))
+	
 	return tokenString, nil
 }

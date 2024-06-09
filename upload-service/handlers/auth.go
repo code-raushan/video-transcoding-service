@@ -29,7 +29,7 @@ func SignUp(c *fiber.Ctx) error {
 
 	user := models.User{
 		FullName: req.FullName,
-		Email: req.Email,
+		Email:    req.Email,
 		Password: hashedPassword,
 	}
 
@@ -52,42 +52,43 @@ func SignUp(c *fiber.Ctx) error {
 }
 
 func SignIn(c *fiber.Ctx) error {
-	var req types.SignInRequest
+    var req types.SignInRequest
 
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Cannot parse the JSON body",
-		})
-	}
+    if err := c.BodyParser(&req); err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error": "Cannot parse the JSON body",
+        })
+    }
 
-	var user models.User
+    var user models.User
 
-	result := database.DB.Where("email = ?", req.Email).First(&user)
-	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error": "Invalid email or password",
-			})
-		}
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "failed to authenticate",
-		})
-	}
+    err := database.DB.Where("email = ?", req.Email).First(&user).Error
+    if err != nil {
+        if err == gorm.ErrRecordNotFound {
+            return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+                "error": "Invalid email or password",
+            })
+        }
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": err.Error(),
+        })
+    }
 
-	if !utils.CheckPassword(req.Password, user.Password) {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid email or password",
-		})
-	}
+    if !utils.CheckPassword(req.Password, user.Password) {
+        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+            "error": "Invalid email or password",
+        })
+    }
 
-	jwtToken, err := utils.CreateJWT(c, user.ID)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+    jwtToken, err := utils.CreateJWT(user.ID)
+    if err != nil {
+        log.Fatal(err.Error())
+    }
 
-	return c.JSON(fiber.Map{
-		"message": "Successfully signed in",
-		"user": user,
-		"token": jwtToken,
-	})
+    return c.JSON(fiber.Map{
+        "message": "Successfully signed in",
+        "user":    user,
+        "token":   jwtToken,
+    })
 }
+
