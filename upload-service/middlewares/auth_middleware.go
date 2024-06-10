@@ -21,8 +21,8 @@ func AuthMiddleware() fiber.Handler {
 		JWT_SECRET := os.Getenv("JWT_SECRET")
 
 		authHeader := c.Get("Authorization")
-		
-		if authHeader == ""{
+
+		if authHeader == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "Token missing",
 			})
@@ -30,7 +30,7 @@ func AuthMiddleware() fiber.Handler {
 
 		tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
 
-		token, err := jwt.Parse(tokenString, func (token *jwt.Token) (interface{}, error)  {
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
@@ -45,7 +45,7 @@ func AuthMiddleware() fiber.Handler {
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			if exp, ok := claims["exp"].(float64); ok {
-				if time.Unix(int64(exp), 0).Before(time.Now()){
+				if time.Unix(int64(exp), 0).Before(time.Now()) {
 					return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 						"error": "Token expired",
 					})

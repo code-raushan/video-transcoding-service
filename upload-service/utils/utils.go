@@ -1,11 +1,14 @@
 package utils
 
 import (
+	"encoding/base64"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -38,4 +41,18 @@ func CreateJWT(id string) (string, error) {
 	tokenString, _ := token.SignedString([]byte(JWT_SECRET))
 	
 	return tokenString, nil
+}
+
+func GenerateShortUUID() (string, error) {
+	// Generate a new UUID
+	u, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+
+	// Encode the UUID using base64 URL encoding
+	encoded := base64.URLEncoding.EncodeToString(u[:])
+
+	// Trim padding characters
+	return strings.TrimRight(encoded, "="), nil
 }
