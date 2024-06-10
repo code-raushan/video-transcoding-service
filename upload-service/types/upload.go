@@ -1,5 +1,5 @@
 package types
 
 type UploadParams struct {
-	Filename string `json:"filename"`
+	Filename string `json:"file_name"`
 }
