@@ -12,7 +12,7 @@ Written in [Go](https://go.dev/)
 * [x] DB Connection Setup
 * [x] User Management APIs (Authentication)
 * [x] S3 Presigned Upload
-* [ ] Lambda Trigger Queue Offload uploaded video metadata 
+* [x] Lambda Trigger Queue Offload uploaded video metadata 
 * [ ] Transcoding Service
 * [ ] Dockerize Transcoder Service
 * [ ] Deploy Transcoder Service AWS ECS

@@ -1,4 +1,4 @@
-module github.com/code-raushan/video-transcoding-service
+module github.com/code-raushan/video-transcoding-service/upload-service
 
 go 1.22.2
 
