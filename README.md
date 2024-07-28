@@ -3,6 +3,7 @@
 Written in [Go](https://go.dev/)
 
 * Uploads video to AWS S3 object storage
+* Utilizes AWS lambda and Kafka for sending s3 uploaded video details
 * Utitlizes Ffmpeg for segmentation
 * AWS ECS for scaling transcoding containers (scale)
 
