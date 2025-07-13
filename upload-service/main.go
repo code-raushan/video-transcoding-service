@@ -20,6 +20,12 @@ func main(){
 	database.ConnectDB()
 	fmt.Println("connected to database")
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"message": "Welcome to the Transcoding Server - Upload Service",
+		})
+	})
+
 	apiV1 := app.Group("/api/v1")
 
 	routes.HandleV1Routes(&apiV1)
